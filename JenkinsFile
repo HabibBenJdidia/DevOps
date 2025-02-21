@@ -1,22 +1,20 @@
 pipeline {
     agent any
-    
-    tools {
-        jdk 'JAVA_HOME'
-        maven 'M2_HOME'
-    }
-    
+
     stages {
-        stage('Compile Stage') {
+        stage('GIT') {
+            steps {
+                git branch: 'master', url: 'https://github.com/HabibBenJdidia/DevOps.git'
+            }
+        }
+        stage('compile') {
             steps {
                 sh 'mvn clean compile'
             }
         }
-        
         stage('MVN SONARQUBE') {
             steps {
-                script {
- sh 'mvn sonar:sonar -Dsonar.login=squ_211f04182c86dd7c3944434963573b3a8da5d3bb -Dsonar.skipTests=true'                }
+                sh 'mvn sonar:sonar -Dsonar.login=squ_211f04182c86dd7c3944434963573b3a8da5d3bb -Dsonar.skipTests=true'
             }
         }
     }
