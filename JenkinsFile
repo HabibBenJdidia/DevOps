@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('GIT') {
             steps {
@@ -12,9 +11,11 @@ pipeline {
                 sh 'mvn clean compile'
             }
         }
-        stage('MVN SONARQUBE') {
+        stage('SonarQube Analysis') {
             steps {
-                sh 'mvn sonar:sonar -Dsonar.login=squ_211f04182c86dd7c3944434963573b3a8da5d3bb -Dsonar.skipTests=true'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
             }
         }
     }
