@@ -1,19 +1,17 @@
 pipeline {
     agent any
-    tools {
-        git 'Default'  // Use the name of your Git installation in Jenkins
-    }
     stages {
         stage('GIT') {
             steps {
-                git branch: 'main', url: 'https://github.com/HabibBenJdidia/DevOps.git'           
+                git branch: 'main', url: 'https://github.com/HabibBenJdidia/DevOps.git'
+            }
         }
         stage('compile') {
             steps {
                 sh 'mvn clean compile'
             }
         }
-        stage('SonarQube Analysis') {
+        stage('MVN SONARQUBE') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar'
