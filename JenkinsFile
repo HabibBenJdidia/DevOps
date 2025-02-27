@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        git 'Default'  // Use the name of your Git installation in Jenkins
+    }
     stages {
         stage('GIT') {
             steps {
