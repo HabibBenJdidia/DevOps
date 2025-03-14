@@ -1,24 +1,37 @@
 version: "3.8"
 
 services:
+  mysqldb:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-defaultpass}
+      MYSQL_DATABASE: timesheet-devops
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
   timesheet-app:
-    build: .
+    build:
+      context: .
+      args:
+        JAR_FILE: target/*.jar
+    image: habibbenjdidia/timesheet-app:latest
     ports:
       - "8082:8082"
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/timesheet-devops
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 
-
-  mysqldb:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: timesheet-devops
-    volumes:
-      - mysql-data:/var/lib/mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/timesheet-devops?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
 volumes:
   mysql-data:
